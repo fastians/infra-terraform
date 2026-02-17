@@ -1,0 +1,9 @@
+# Copy to terraform.tfvars and fill in.
+
+aws_region = "us-east-1"
+
+# Paste your SSH public key (e.g. contents of ~/.ssh/id_rsa.pub)
+ssh_public_key = "ssh-rsa AAAA... your-key"
+
+# Optional: restrict monitoring ports to your IP
+# ingress_source_cidr = "1.2.3.4/32"
