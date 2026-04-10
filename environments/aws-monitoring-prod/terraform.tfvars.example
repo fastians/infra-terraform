@@ -1,0 +1,17 @@
+# Optional: copy to terraform.tfvars to override defaults.
+# The EC2 key pair must already exist in the region (default name AWS → AWS.pem in Ansible).
+
+aws_region = "ap-northeast-2"
+vpc_cidr   = "10.1.0.0/16"
+public_subnet_cidr = "10.1.1.0/24"
+
+# key_name = "AWS"
+
+# Restrict Grafana/Prometheus/Loki etc. to your IP in production
+# ingress_source_cidr = "203.0.113.50/32"
+
+# 2 GiB RAM default; bump if Prometheus OOMs
+# instance_type = "t3.small"
+
+# Disk for OS + Loki/Prometheus data
+# root_volume_size_gb = 30

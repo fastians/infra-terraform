@@ -1,5 +1,5 @@
 resource "azurerm_network_security_group" "monitoring" {
-  name                = "azure-dev-monitoring-nsg"
+  name                = "azure-app-dev-monitoring-nsg"
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
 }
@@ -27,7 +27,7 @@ resource "azurerm_network_security_rule" "grafana" {
   source_port_range           = "*"
   destination_port_range      = "3000"
   source_address_prefix       = var.ingress_source_cidr
-  destination_address_prefix = "*"
+  destination_address_prefix  = "*"
   resource_group_name         = azurerm_resource_group.main.name
   network_security_group_name = azurerm_network_security_group.monitoring.name
 }
@@ -74,8 +74,8 @@ resource "azurerm_network_security_rule" "alertmanager" {
   network_security_group_name = azurerm_network_security_group.monitoring.name
 }
 
-resource "azurerm_network_interface_security_group_association" "vm" {
-  network_interface_id      = azurerm_network_interface.vm.id
+resource "azurerm_network_interface_security_group_association" "dev_app" {
+  network_interface_id      = azurerm_network_interface.dev_app.id
   network_security_group_id = azurerm_network_security_group.monitoring.id
 }
 

@@ -1,10 +1,10 @@
 output "public_ip" {
-  value       = google_compute_instance.vm.network_interface[0].access_config[0].nat_ip
+  value       = google_compute_instance.dev_app.network_interface[0].access_config[0].nat_ip
   description = "dev-monitor public IP"
 }
 
 output "monitor_public_ip" {
-  value       = google_compute_instance.vm.network_interface[0].access_config[0].nat_ip
+  value       = google_compute_instance.dev_app.network_interface[0].access_config[0].nat_ip
   description = "dev-monitor public IP (alias)"
 }
 

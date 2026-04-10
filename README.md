@@ -1,63 +1,112 @@
-# Infra Terraform
+# Infra Terraform Usage Guide
 
-Multi-cloud modular Terraform structure for infrastructure management.
+This directory manages Mek-Lab infrastructure with Terraform.  
+Each folder in `environments/` is an independent Terraform root and state.
 
-## Project Structure
-
-```text
-infra-terraform/
-├── modules/                ← Reusable building blocks
-│   ├── network/
-│   ├── compute-instance/
-│   ├── security-rules/
-│   └── monitoring-host/
-├── environments/           ← Environment-specific deployments
-│   ├── dev/                ← Oracle Cloud
-│   ├── aws-dev/            ← AWS
-│   ├── gcp-dev/            ← Google Cloud
-│   ├── azure-dev/          ← Azure
-│   └── ...
-├── providers/              ← Provider configurations (AWS, GCP, Oracle)
-│   ├── aws.tf
-│   ├── gcp.tf
-│   └── oracle.tf
-└── global/                 ← Global settings and versions
-    └── versions.tf
-```
-
-## Creating instances seamlessly (any cloud)
-
-Every cloud dev environment creates the **same logical setup**:
-
-- **2 instances:** `dev-monitor`, `monitoring-server`
-- **Image:** Ubuntu 22.04
-- **Firewall:** SSH (22), Grafana (3000), Loki (3100), Prometheus (9090), Alertmanager (9093)
-- **Outputs:** `public_ip`, `monitor_public_ip`, `monitoring_server_public_ip`
-
-**Same workflow for Oracle, AWS, GCP, or Azure:**
+## Quick Start
 
 ```bash
-cd environments/<cloud>-dev    # dev (Oracle), aws-dev, gcp-dev, azure-dev
-cp terraform.tfvars.example terraform.tfvars   # if present
-# Edit terraform.tfvars with your values (see table below)
+cd infra_terraform/environments/<environment-name>
+cp terraform.tfvars.example terraform.tfvars   # if file exists
+# edit terraform.tfvars
 terraform init
 terraform plan
 terraform apply
 ```
 
-| Environment   | Required variables              | Auth |
-|----------------|----------------------------------|------|
-| **dev** (Oracle) | `tenancy_ocid`, `compartment_ocid`, `ssh_public_key`, `subnet_ocid` | OCI CLI config |
-| **aws-dev**   | `ssh_public_key` (+ optional `aws_region`, `key_name`) | `aws configure` or env |
-| **gcp-dev**   | `gcp_project_id`, `ssh_public_key` (+ optional `gcp_region`) | `gcloud auth application-default login` |
-| **azure-dev** | `ssh_public_key` (+ optional `azure_region`, `resource_group_name`) | `az login` |
+To destroy an environment:
 
-Use one `ssh_public_key` (e.g. contents of `~/.ssh/id_rsa.pub`) everywhere. Optional `ingress_source_cidr` (default `0.0.0.0/0`) restricts monitoring ports to your IP.
+```bash
+terraform destroy
+```
 
-## Usage
+## Environment Naming Standard
 
-Each environment in `environments/` manages its own state and can consume modules defined in `modules/`.
+Pattern: `<cloud>-<purpose>-<stage>`
 
-### Providers
+- `aws-app-dev`
+- `aws-monitoring-prod`
+- `azure-app-dev`
+- `gcp-app-dev`
+- `oci-app-dev`
+- `shared-app-staging`
+- `shared-app-prod`
 
-Configurations for each cloud provider are located in `providers/`. Authenticate with the respective CLI before running Terraform (OCI, AWS CLI, gcloud, az).
+This format makes ownership and lifecycle obvious at a glance.
+
+## Environments and Purpose
+
+| Environment | Purpose | Notes |
+|---|---|---|
+| `aws-app-dev` | Main AWS dev app host | Ubuntu EC2, SSH + app/monitoring ports |
+| `aws-monitoring-prod` | Dedicated AWS production monitoring host | Prometheus/Grafana/Loki/Alertmanager VM |
+| `azure-app-dev` | Azure dev app environment | Azure VM + NSG/network resources |
+| `gcp-app-dev` | GCP dev app environment | GCE instance(s) + VPC/firewall |
+| `oci-app-dev` | OCI dev app environment | OCI networking/compute |
+| `shared-app-staging` | Placeholder staging root | Currently minimal scaffold |
+| `shared-app-prod` | Placeholder prod root | Currently minimal scaffold |
+
+## Recommended Workflow Per Change
+
+```bash
+terraform fmt -recursive .
+terraform validate
+terraform plan
+```
+
+For automated scripts, prefer machine-readable outputs:
+
+```bash
+terraform output -json
+```
+
+## AWS App Dev (Most Common)
+
+```bash
+cd infra_terraform/environments/aws-app-dev
+./smoke-test.sh
+cp terraform.tfvars.example terraform.tfvars
+terraform init
+terraform plan
+terraform apply
+terraform output -raw public_ip
+```
+
+Useful outputs:
+- `public_ip`
+- `ssh_user`
+- `ssh_command_example`
+
+## AWS Monitoring Prod
+
+```bash
+cd infra_terraform/environments/aws-monitoring-prod
+cp terraform.tfvars.example terraform.tfvars
+terraform init
+terraform plan
+terraform apply
+terraform output -raw public_ip
+```
+
+After apply:
+- Add output IP to Ansible inventory (`monitoring-aws` host in `infra_ansible`).
+- Run monitoring-related Ansible playbooks from `infra_ansible`.
+
+## Authentication Notes
+
+- **AWS:** use `aws configure`, environment variables, or IAM role.
+- **Azure:** `az login`.
+- **GCP:** `gcloud auth application-default login`.
+- **OCI:** configured OCI CLI profile.
+
+Avoid hardcoding credentials in Terraform files.
+
+## Structure Overview
+
+```text
+infra_terraform/
+├── modules/                  # Reusable modules (network, security, compute)
+├── environments/             # One state per environment
+├── providers/                # Shared provider snippets
+└── global/                   # Global/version settings
+```

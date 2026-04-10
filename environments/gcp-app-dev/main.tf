@@ -1,4 +1,4 @@
-resource "google_compute_instance" "vm" {
+resource "google_compute_instance" "dev_app" {
   name         = "dev-monitor"
   machine_type = "e2-micro"
   zone         = data.google_compute_zones.available.names[0]
@@ -19,7 +19,7 @@ resource "google_compute_instance" "vm" {
     ssh-keys = "ubuntu:${var.ssh_public_key}"
   }
 
-  tags = ["gcp-dev-monitoring"]
+  tags = ["gcp-app-dev-monitoring"]
 }
 
 resource "google_compute_instance" "monitoring_server" {
@@ -43,5 +43,5 @@ resource "google_compute_instance" "monitoring_server" {
     ssh-keys = "ubuntu:${var.ssh_public_key}"
   }
 
-  tags = ["gcp-dev-monitoring"]
+  tags = ["gcp-app-dev-monitoring"]
 }

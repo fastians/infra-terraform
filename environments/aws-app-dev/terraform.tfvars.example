@@ -1,0 +1,19 @@
+# Copy to terraform.tfvars and fill in.
+# Or generate from your default SSH key:
+#   cp terraform.tfvars.example terraform.tfvars
+#   # Replace the ssh_public_key value with output of: cat ~/.ssh/id_rsa.pub
+
+aws_region = "ap-northeast-2"
+vpc_cidr   = "10.0.0.0/16"
+public_subnet_cidr = "10.0.1.0/24"
+
+# Paste your SSH public key (e.g. contents of ~/.ssh/id_rsa.pub)
+ssh_public_key = "ssh-rsa AAAA... your-key"
+
+# Optional: restrict monitoring ports to your IP
+# ingress_source_cidr = "1.2.3.4/32"
+
+# Optional: sizing (defaults are minimum-cost Ubuntu 22.04)
+# instance_type       = "t3.micro"
+# root_volume_size_gb = 8
+# root_volume_type    = "gp3"

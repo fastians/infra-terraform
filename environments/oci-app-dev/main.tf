@@ -1,4 +1,4 @@
-resource "oci_core_instance" "vm" {
+resource "oci_core_instance" "dev_app" {
   availability_domain = data.oci_identity_availability_domains.ads.availability_domains[0].name
   compartment_id      = var.compartment_ocid
   shape               = "VM.Standard.E2.1.Micro"

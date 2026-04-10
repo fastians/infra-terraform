@@ -1,6 +1,6 @@
 # SSH from anywhere
 resource "google_compute_firewall" "ssh" {
-  name    = "gcp-dev-ssh"
+  name    = "gcp-app-dev-ssh"
   network = google_compute_network.main.name
 
   allow {
@@ -14,7 +14,7 @@ resource "google_compute_firewall" "ssh" {
 
 # Grafana, Loki, Prometheus, Alertmanager
 resource "google_compute_firewall" "monitoring" {
-  name    = "gcp-dev-monitoring"
+  name    = "gcp-app-dev-monitoring"
   network = google_compute_network.main.name
 
   allow {

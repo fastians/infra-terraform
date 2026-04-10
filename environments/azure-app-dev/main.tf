@@ -1,4 +1,4 @@
-resource "azurerm_linux_virtual_machine" "vm" {
+resource "azurerm_linux_virtual_machine" "dev_app" {
   name                = "dev-monitor"
   resource_group_name = azurerm_resource_group.main.name
   location            = azurerm_resource_group.main.location
@@ -11,7 +11,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
   }
 
   network_interface_ids = [
-    azurerm_network_interface.vm.id,
+    azurerm_network_interface.dev_app.id,
   ]
 
   os_disk {
