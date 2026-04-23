@@ -22,8 +22,12 @@ From `infra_terraform/`:
 make help
 make fmt
 make init ENV=aws-app-dev
+make check ENV=aws-app-dev
 make validate ENV=aws-app-dev
 make plan ENV=aws-app-dev
+make apply ENV=aws-app-dev
+make output ENV=aws-app-dev
+make destroy ENV=aws-app-dev
 ```
 
 To destroy an environment:
@@ -122,3 +126,11 @@ infra_terraform/
 ├── providers/                # Shared provider snippets
 └── global/                   # Global/version settings
 ```
+
+### Module Standards
+
+- `main.tf`: resources only
+- `variables.tf`: all inputs with types/descriptions
+- `outputs.tf`: explicit module outputs
+
+This keeps server provisioning simple to reason about and easy to review.
