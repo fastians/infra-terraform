@@ -57,6 +57,12 @@ variable "allowed_app_cidrs" {
   default     = ["0.0.0.0/0"]
 }
 
+variable "allowed_monitoring_cidrs" {
+  description = "CIDR blocks allowed to access monitoring ports (3000, 3100, 9090, 9093, 9115)."
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
+}
+
 variable "instance_type" {
   description = "EC2 instance type for app host."
   type        = string

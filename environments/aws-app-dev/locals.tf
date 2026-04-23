@@ -39,5 +39,40 @@ locals {
       cidr_blocks = var.allowed_app_cidrs
       description = "App ports"
     }
+    grafana = {
+      from_port   = 3000
+      to_port     = 3000
+      protocol    = "tcp"
+      cidr_blocks = var.allowed_monitoring_cidrs
+      description = "Grafana"
+    }
+    loki = {
+      from_port   = 3100
+      to_port     = 3100
+      protocol    = "tcp"
+      cidr_blocks = var.allowed_monitoring_cidrs
+      description = "Loki"
+    }
+    prometheus = {
+      from_port   = 9090
+      to_port     = 9090
+      protocol    = "tcp"
+      cidr_blocks = var.allowed_monitoring_cidrs
+      description = "Prometheus"
+    }
+    alertmanager = {
+      from_port   = 9093
+      to_port     = 9093
+      protocol    = "tcp"
+      cidr_blocks = var.allowed_monitoring_cidrs
+      description = "Alertmanager"
+    }
+    blackbox = {
+      from_port   = 9115
+      to_port     = 9115
+      protocol    = "tcp"
+      cidr_blocks = var.allowed_monitoring_cidrs
+      description = "Blackbox Exporter"
+    }
   }
 }
