@@ -66,11 +66,11 @@ variable "instance_type" {
 variable "root_volume_size_gb" {
   description = "Root EBS disk size (GiB)."
   type        = number
-  default     = 150
+  default     = 50
 
   validation {
-    condition     = var.root_volume_size_gb >= 100 && var.root_volume_size_gb <= 200
-    error_message = "root_volume_size_gb must be between 100 and 200."
+    condition     = var.root_volume_size_gb >= 50 && var.root_volume_size_gb <= 200
+    error_message = "root_volume_size_gb must be between 50 and 200."
   }
 }
 

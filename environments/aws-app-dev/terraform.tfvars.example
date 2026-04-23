@@ -18,9 +18,9 @@ ssh_public_key = "ssh-rsa AAAA... your-key"
 # allowed_http_cidrs = ["1.2.3.4/32"]
 # allowed_app_cidrs  = ["1.2.3.4/32"]
 
-# Sizing for requested target (2 vCPU, 8 GB RAM, gp3 disk 100-200 GB)
+# Sizing for requested target (2 vCPU, 8 GB RAM, gp3 disk 50-200 GB)
 instance_type       = "t3.large"
-root_volume_size_gb = 150
+root_volume_size_gb = 50
 root_volume_type    = "gp3"
 
 tags = {
