@@ -14,6 +14,18 @@ terraform plan
 terraform apply
 ```
 
+## Makefile Shortcuts
+
+From `infra_terraform/`:
+
+```bash
+make help
+make fmt
+make init ENV=aws-app-dev
+make validate ENV=aws-app-dev
+make plan ENV=aws-app-dev
+```
+
 To destroy an environment:
 
 ```bash

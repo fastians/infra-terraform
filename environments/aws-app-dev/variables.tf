@@ -1,7 +1,19 @@
 variable "aws_region" {
-  description = "AWS region"
+  description = "AWS region for deployment."
   type        = string
   default     = "ap-northeast-2"
+}
+
+variable "project_name" {
+  description = "Project name used in resource names and tags."
+  type        = string
+  default     = "mek-lab"
+}
+
+variable "environment" {
+  description = "Environment label used in names and tags."
+  type        = string
+  default     = "app-dev"
 }
 
 variable "vpc_cidr" {
@@ -22,31 +34,54 @@ variable "ssh_public_key" {
 }
 
 variable "key_name" {
-  description = "Name for the EC2 key pair"
+  description = "Name for the EC2 key pair."
   type        = string
-  default     = "aws-app-dev-key"
+  default     = "mek-lab-app-dev-key"
 }
 
-variable "ingress_source_cidr" {
-  description = "CIDR allowed for monitoring ingress (TCP 3000, 3100, 9090, 9093). Use your IP/32 for security, or 0.0.0.0/0 to allow all."
-  type        = string
-  default     = "0.0.0.0/0"
+variable "allowed_ssh_cidrs" {
+  description = "CIDR blocks allowed to access SSH."
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
+}
+
+variable "allowed_http_cidrs" {
+  description = "CIDR blocks allowed to access HTTP/HTTPS."
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
+}
+
+variable "allowed_app_cidrs" {
+  description = "CIDR blocks allowed to access application ports 8000-8002."
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
 }
 
 variable "instance_type" {
-  description = "EC2 size for the dev app instance. t3.nano is minimum cost/RAM; use t3.micro or larger if colocating heavier stacks. For dedicated monitoring use environments/aws-monitoring-prod."
+  description = "EC2 instance type for app host."
   type        = string
-  default     = "t3.nano"
+  default     = "t3.large"
 }
 
 variable "root_volume_size_gb" {
-  description = "Root disk size (GiB) per instance; 8 is a practical minimum for Ubuntu 22.04."
+  description = "Root EBS disk size (GiB)."
   type        = number
-  default     = 8
+  default     = 150
+
+  validation {
+    condition     = var.root_volume_size_gb >= 100 && var.root_volume_size_gb <= 200
+    error_message = "root_volume_size_gb must be between 100 and 200."
+  }
 }
 
 variable "root_volume_type" {
   description = "Root EBS volume type (gp3 recommended)."
   type        = string
   default     = "gp3"
+}
+
+variable "tags" {
+  description = "Additional tags to apply to resources."
+  type        = map(string)
+  default     = {}
 }
