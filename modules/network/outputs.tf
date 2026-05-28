@@ -1,6 +1,6 @@
 output "vpc_id" {
-  description = "Created VPC ID."
-  value       = aws_vpc.this.id
+  description = "VPC ID (created or existing)."
+  value       = local.vpc_id
 }
 
 output "public_subnet_id" {

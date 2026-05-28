@@ -1,4 +1,11 @@
+locals {
+  use_existing_vpc = var.existing_vpc_id != ""
+  vpc_id           = local.use_existing_vpc ? var.existing_vpc_id : aws_vpc.this[0].id
+}
+
 resource "aws_vpc" "this" {
+  count = local.use_existing_vpc ? 0 : 1
+
   cidr_block           = var.vpc_cidr
   enable_dns_hostnames = true
   enable_dns_support   = true
@@ -8,16 +15,31 @@ resource "aws_vpc" "this" {
   }
 }
 
+data "aws_internet_gateway" "existing" {
+  count = local.use_existing_vpc ? 1 : 0
+
+  filter {
+    name   = "attachment.vpc-id"
+    values = [var.existing_vpc_id]
+  }
+}
+
 resource "aws_internet_gateway" "this" {
-  vpc_id = aws_vpc.this.id
+  count = local.use_existing_vpc ? 0 : 1
+
+  vpc_id = aws_vpc.this[0].id
 
   tags = {
     Name = "${var.name_prefix}-igw"
   }
 }
 
+locals {
+  internet_gateway_id = local.use_existing_vpc ? data.aws_internet_gateway.existing[0].id : aws_internet_gateway.this[0].id
+}
+
 resource "aws_subnet" "public" {
-  vpc_id                  = aws_vpc.this.id
+  vpc_id                  = local.vpc_id
   cidr_block              = var.public_subnet_cidr
   availability_zone       = var.availability_zone
   map_public_ip_on_launch = true
@@ -28,11 +50,11 @@ resource "aws_subnet" "public" {
 }
 
 resource "aws_route_table" "public" {
-  vpc_id = aws_vpc.this.id
+  vpc_id = local.vpc_id
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.this.id
+    gateway_id = local.internet_gateway_id
   }
 
   tags = {

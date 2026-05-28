@@ -1,10 +1,10 @@
 output "backend_public_ip" {
-  description = "Public IPv4 of the backend EC2 (use as ansible_host for backend-aws-prod)."
+  description = "Public IPv4 of the staging backend EC2 (ansible_host for backend-aws-staging)."
   value       = module.backend.public_ip
 }
 
 output "salome_public_ip" {
-  description = "Public IPv4 of the salome EC2 (use as ansible_host for salome-aws-prod)."
+  description = "Public IPv4 of the staging salome EC2 (ansible_host for salome-aws-staging)."
   value       = module.salome.public_ip
 }
 
@@ -19,7 +19,7 @@ output "salome_instance_id" {
 }
 
 output "vpc_id" {
-  description = "VPC ID for the aws-app-prod environment."
+  description = "VPC ID for the aws-app-staging environment."
   value       = module.network.vpc_id
 }
 

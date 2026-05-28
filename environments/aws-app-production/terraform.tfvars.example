@@ -1,0 +1,24 @@
+# Copy to terraform.tfvars and fill in.
+# NEW production stack (m6i.2xlarge) — separate state from aws-app-staging.
+
+aws_region   = "ap-northeast-2"
+project_name = "mek-lab"
+environment  = "app-production"
+
+# Reuse staging VPC when at VPC quota (see aws-app-staging terraform output vpc_id).
+existing_vpc_id    = "vpc-xxxxxxxx"
+public_subnet_cidr = "10.2.2.0/24"
+
+key_name = "mek-lab-app-production-key"
+
+ssh_public_key = "ssh-ed25519 AAAA... your-key"
+
+backend_instance_type       = "m6i.2xlarge"
+backend_root_volume_size_gb = 80
+salome_instance_type        = "m6i.2xlarge"
+salome_root_volume_size_gb  = 100
+root_volume_type            = "gp3"
+
+tags = {
+  Owner = "platform-team"
+}

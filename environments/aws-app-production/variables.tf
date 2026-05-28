@@ -13,19 +13,25 @@ variable "project_name" {
 variable "environment" {
   description = "Environment label used in names and tags."
   type        = string
-  default     = "app-prod"
+  default     = "app-production"
 }
 
 variable "vpc_cidr" {
-  description = "CIDR block for the aws-app-prod VPC. Distinct from aws-app-dev (10.0/16) and aws-monitoring-prod (10.1/16)."
+  description = "CIDR for a new VPC. Ignored when existing_vpc_id is set (account VPC quota)."
   type        = string
-  default     = "10.2.0.0/16"
+  default     = "10.3.0.0/16"
+}
+
+variable "existing_vpc_id" {
+  description = "Reuse staging VPC instead of creating a new one (required when VPC limit is reached)."
+  type        = string
+  default     = ""
 }
 
 variable "public_subnet_cidr" {
-  description = "CIDR block for the aws-app-prod public subnet."
+  description = "Public subnet CIDR inside the VPC (must not overlap other subnets)."
   type        = string
-  default     = "10.2.1.0/24"
+  default     = "10.2.2.0/24"
 }
 
 variable "ssh_public_key" {
@@ -36,7 +42,7 @@ variable "ssh_public_key" {
 variable "key_name" {
   description = "Name for the EC2 key pair."
   type        = string
-  default     = "mek-lab-app-prod-key"
+  default     = "mek-lab-app-production-key"
 }
 
 variable "allowed_ssh_cidrs" {
@@ -64,21 +70,21 @@ variable "allowed_monitoring_cidrs" {
 }
 
 variable "backend_instance_type" {
-  description = "EC2 instance type for the backend host (3 FastAPI apps)."
+  description = "EC2 instance type for the production backend host (GEO runs here). m6i.2xlarge = 8 vCPU, 32 GiB, non-burstable."
   type        = string
-  default     = "t3.large"
+  default     = "m6i.2xlarge"
 }
 
 variable "salome_instance_type" {
-  description = "EC2 instance type for the Salome host."
+  description = "EC2 instance type for the production Salome host (FEM + Singularity). m6i.2xlarge = 8 vCPU, 32 GiB."
   type        = string
-  default     = "t3.large"
+  default     = "m6i.2xlarge"
 }
 
 variable "backend_root_volume_size_gb" {
-  description = "Backend root EBS disk size (GiB). Mirrors GCP backend (~48 GB used)."
+  description = "Backend root EBS disk size (GiB)."
   type        = number
-  default     = 50
+  default     = 80
 
   validation {
     condition     = var.backend_root_volume_size_gb >= 50 && var.backend_root_volume_size_gb <= 200
@@ -87,9 +93,9 @@ variable "backend_root_volume_size_gb" {
 }
 
 variable "salome_root_volume_size_gb" {
-  description = "Salome root EBS disk size (GiB). Mirrors GCP salome (~38 GB used)."
+  description = "Salome root EBS disk size (GiB)."
   type        = number
-  default     = 50
+  default     = 100
 
   validation {
     condition     = var.salome_root_volume_size_gb >= 50 && var.salome_root_volume_size_gb <= 200

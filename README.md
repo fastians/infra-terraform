@@ -50,17 +50,34 @@ Pattern: `<cloud>-<purpose>-<stage>`
 
 This format makes ownership and lifecycle obvious at a glance.
 
+## App server tiers (GCP + AWS staging + AWS production)
+
+| Tier | Where | Terraform | Ansible hosts | Sizing |
+|------|--------|-----------|---------------|--------|
+| **GCP legacy** | Google Cloud | (manual / existing) | `backend-server`, `salome-server` | Unchanged — kept |
+| **AWS staging** | ap-northeast-2 | `aws-app-staging` | `backend-aws-staging`, `salome-aws-staging` | `t3.large`, 50 GiB |
+| | | | EC2 `mek-lab-app-staging-backend` **3.35.138.242**, `mek-lab-app-staging-salome` **13.209.14.89** (renamed from `app-prod-*`) | |
+| **AWS production** | ap-northeast-2 | `aws-app-production` | `backend-aws-prod`, `salome-aws-prod` | `m6i.2xlarge` (8 vCPU, 32 GiB), 80/100 GiB |
+| | | | EC2 `mek-lab-app-production-backend` **15.164.227.138**, `mek-lab-app-production-salome` **3.34.135.134** | |
+| | | | Subnet **10.2.2.0/24** in **shared VPC** with staging (`existing_vpc_id`; see env README) | |
+
+`aws-app-prod` was renamed to **`aws-app-staging`** so existing EC2 state is not destroyed when production is created.
+
+**Do not** run `terraform apply` on `aws-app-staging` with m6i instance types — that plan destroys/recreates staging VMs. Use **`aws-app-production`** for upgraded instances.
+
+**DNS (production):** `api.mek-lab.com` → backend IP, `salome.mek-lab.com` → salome IP. TLS and apps are provisioned by Ansible after apply.
+
 ## Environments and Purpose
 
 | Environment | Purpose | Notes |
 |---|---|---|
-| `aws-app-dev` | Main AWS dev app host | Ubuntu EC2, SSH + app/monitoring ports |
-| `aws-monitoring-prod` | Dedicated AWS production monitoring host | Prometheus/Grafana/Loki/Alertmanager VM |
+| `aws-app-staging` | AWS staging app pair (backend + salome) | Existing t3 VMs; state migrated from `aws-app-prod` |
+| `aws-app-production` | AWS production app pair | Shared VPC with staging; subnet 10.2.2.0/24; m6i.2xlarge (backend includes GEO) |
+| `aws-app-dev` | AWS dev app host | Single VM for experiments |
+| `aws-monitoring-prod` | Dedicated AWS monitoring host | Prometheus/Grafana/Loki/Alertmanager VM |
 | `azure-app-dev` | Azure dev app environment | Azure VM + NSG/network resources |
 | `gcp-app-dev` | GCP dev app environment | GCE instance(s) + VPC/firewall |
 | `oci-app-dev` | OCI dev app environment | OCI networking/compute |
-| `shared-app-staging` | Placeholder staging root | Currently minimal scaffold |
-| `shared-app-prod` | Placeholder prod root | Currently minimal scaffold |
 
 ## Recommended Workflow Per Change
 
@@ -134,3 +151,5 @@ infra_terraform/
 - `outputs.tf`: explicit module outputs
 
 This keeps server provisioning simple to reason about and easy to review.
+
+For AI/automation context (tiers, plan safety, VPC sharing), see [CLAUDE.md](CLAUDE.md).
