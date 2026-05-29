@@ -1,5 +1,9 @@
 # Copy to terraform.tfvars and fill in.
-# NEW production stack (m6i.2xlarge) — separate state from aws-app-staging.
+# Production stack — separate state from aws-app-staging.
+#
+# Two modes:
+#   enable_split_microservices = false  → backend + salome only (current all-in-one API host)
+#   enable_split_microservices = true   → backend + geo + llm + salome (4-server model)
 
 aws_region   = "ap-northeast-2"
 project_name = "mek-lab"
@@ -13,11 +17,22 @@ key_name = "mek-lab-app-production-key"
 
 ssh_public_key = "ssh-ed25519 AAAA... your-key"
 
-backend_instance_type       = "m6i.2xlarge"
-backend_root_volume_size_gb = 80
-salome_instance_type        = "m6i.2xlarge"
-salome_root_volume_size_gb  = 100
-root_volume_type            = "gp3"
+# --- 4-server production sizing (defaults match recommended capacity) ---
+enable_split_microservices = false
+
+backend_instance_type       = "m7i.2xlarge"
+backend_root_volume_size_gb = 200
+
+geo_instance_type       = "c7i.4xlarge"
+geo_root_volume_size_gb = 500
+
+llm_instance_type       = "m7i.xlarge"
+llm_root_volume_size_gb = 200
+
+salome_instance_type        = "r7i.8xlarge"
+salome_root_volume_size_gb  = 1000
+
+root_volume_type = "gp3"
 
 tags = {
   Owner = "platform-team"

@@ -3,9 +3,39 @@ output "backend_public_ip" {
   value       = module.backend.public_ip
 }
 
+output "backend_private_ip" {
+  description = "Private VPC IP of the production backend EC2."
+  value       = module.backend.private_ip
+}
+
 output "salome_public_ip" {
   description = "Public IPv4 of the production salome EC2 (ansible_host for salome-aws-prod)."
   value       = module.salome.public_ip
+}
+
+output "salome_private_ip" {
+  description = "Private VPC IP of the production salome EC2."
+  value       = module.salome.private_ip
+}
+
+output "geo_public_ip" {
+  description = "Public IPv4 of the dedicated GEO EC2 (empty when enable_split_microservices=false)."
+  value       = try(module.geo[0].public_ip, null)
+}
+
+output "geo_private_ip" {
+  description = "Private VPC IP of the dedicated GEO EC2 — use for nginx_geo_upstream and GEO_SERVER_URL."
+  value       = try(module.geo[0].private_ip, null)
+}
+
+output "llm_public_ip" {
+  description = "Public IPv4 of the dedicated LLM EC2 (empty when enable_split_microservices=false)."
+  value       = try(module.llm[0].public_ip, null)
+}
+
+output "llm_private_ip" {
+  description = "Private VPC IP of the dedicated LLM EC2 — use for nginx_llm_upstream and LLM_SERVER_URL."
+  value       = try(module.llm[0].private_ip, null)
 }
 
 output "backend_instance_id" {
@@ -16,6 +46,16 @@ output "backend_instance_id" {
 output "salome_instance_id" {
   description = "Salome EC2 instance ID."
   value       = module.salome.instance_id
+}
+
+output "geo_instance_id" {
+  description = "GEO EC2 instance ID (null when split microservices disabled)."
+  value       = try(module.geo[0].instance_id, null)
+}
+
+output "llm_instance_id" {
+  description = "LLM EC2 instance ID (null when split microservices disabled)."
+  value       = try(module.llm[0].instance_id, null)
 }
 
 output "vpc_id" {
@@ -29,7 +69,7 @@ output "public_subnet_id" {
 }
 
 output "security_group_id" {
-  description = "Shared security group attached to both instances."
+  description = "Shared security group attached to production instances."
   value       = module.security.security_group_id
 }
 
@@ -46,4 +86,14 @@ output "ssh_command_example_backend" {
 output "ssh_command_example_salome" {
   description = "Example SSH to salome (replace key path; key must match terraform.tfvars)."
   value       = "ssh -i ~/.ssh/<your-private-key> ubuntu@${module.salome.public_ip}"
+}
+
+output "ssh_command_example_geo" {
+  description = "Example SSH to GEO host (null when split microservices disabled)."
+  value       = var.enable_split_microservices ? "ssh -i ~/.ssh/<your-private-key> ubuntu@${module.geo[0].public_ip}" : null
+}
+
+output "ssh_command_example_llm" {
+  description = "Example SSH to LLM host (null when split microservices disabled)."
+  value       = var.enable_split_microservices ? "ssh -i ~/.ssh/<your-private-key> ubuntu@${module.llm[0].public_ip}" : null
 }

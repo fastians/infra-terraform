@@ -7,3 +7,8 @@ output "public_ip" {
   description = "EC2 public IPv4 address."
   value       = aws_instance.this.public_ip
 }
+
+output "private_ip" {
+  description = "EC2 private IPv4 address (VPC internal)."
+  value       = aws_instance.this.private_ip
+}

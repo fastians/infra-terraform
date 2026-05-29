@@ -69,37 +69,77 @@ variable "allowed_monitoring_cidrs" {
   default     = ["0.0.0.0/0"]
 }
 
+variable "enable_split_microservices" {
+  description = "When true, create dedicated GEO and LLM EC2 instances (4-server production model)."
+  type        = bool
+  default     = false
+}
+
 variable "backend_instance_type" {
-  description = "EC2 instance type for the production backend host (GEO runs here). m6i.2xlarge = 8 vCPU, 32 GiB, non-burstable."
+  description = "EC2 instance type for the production backend/API host (Nginx + backendserver). m7i.2xlarge = 8 vCPU, 32 GiB."
   type        = string
-  default     = "m6i.2xlarge"
+  default     = "m7i.2xlarge"
+}
+
+variable "geo_instance_type" {
+  description = "EC2 instance type for the dedicated GEO host (FreeCAD/pythonocc). c7i.4xlarge = 16 vCPU, 32 GiB."
+  type        = string
+  default     = "c7i.4xlarge"
+}
+
+variable "llm_instance_type" {
+  description = "EC2 instance type for the dedicated LLM/RAG host. m7i.xlarge = 4 vCPU, 16 GiB."
+  type        = string
+  default     = "m7i.xlarge"
 }
 
 variable "salome_instance_type" {
-  description = "EC2 instance type for the production Salome host (FEM + Singularity). m6i.2xlarge = 8 vCPU, 32 GiB."
+  description = "EC2 instance type for the production Salome host (FEM + Singularity). r7i.8xlarge = 32 vCPU, 256 GiB."
   type        = string
-  default     = "m6i.2xlarge"
+  default     = "r7i.8xlarge"
 }
 
 variable "backend_root_volume_size_gb" {
   description = "Backend root EBS disk size (GiB)."
   type        = number
-  default     = 80
+  default     = 200
 
   validation {
-    condition     = var.backend_root_volume_size_gb >= 50 && var.backend_root_volume_size_gb <= 200
-    error_message = "backend_root_volume_size_gb must be between 50 and 200."
+    condition     = var.backend_root_volume_size_gb >= 50 && var.backend_root_volume_size_gb <= 500
+    error_message = "backend_root_volume_size_gb must be between 50 and 500."
+  }
+}
+
+variable "geo_root_volume_size_gb" {
+  description = "GEO root EBS disk size (GiB)."
+  type        = number
+  default     = 500
+
+  validation {
+    condition     = var.geo_root_volume_size_gb >= 100 && var.geo_root_volume_size_gb <= 1000
+    error_message = "geo_root_volume_size_gb must be between 100 and 1000."
+  }
+}
+
+variable "llm_root_volume_size_gb" {
+  description = "LLM root EBS disk size (GiB)."
+  type        = number
+  default     = 200
+
+  validation {
+    condition     = var.llm_root_volume_size_gb >= 50 && var.llm_root_volume_size_gb <= 500
+    error_message = "llm_root_volume_size_gb must be between 50 and 500."
   }
 }
 
 variable "salome_root_volume_size_gb" {
   description = "Salome root EBS disk size (GiB)."
   type        = number
-  default     = 100
+  default     = 1000
 
   validation {
-    condition     = var.salome_root_volume_size_gb >= 50 && var.salome_root_volume_size_gb <= 200
-    error_message = "salome_root_volume_size_gb must be between 50 and 200."
+    condition     = var.salome_root_volume_size_gb >= 100 && var.salome_root_volume_size_gb <= 2000
+    error_message = "salome_root_volume_size_gb must be between 100 and 2000."
   }
 }
 
