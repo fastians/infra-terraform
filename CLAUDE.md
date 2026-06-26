@@ -16,7 +16,7 @@ This document defines how infrastructure changes are made in `infra_terraform`.
 |------|---------------|-------|------------------------|--------|
 | GCP legacy | — | — | (existing) | Unchanged |
 | **AWS staging** | `aws-app-staging` | **Existing VMs** — do not resize via TF | `mek-lab-app-staging-*` | `t3.large`, 50 GiB |
-| **AWS production** | `aws-app-production` | **Separate state** — new VMs | `mek-lab-app-production-*` | `m6i.2xlarge` (8 vCPU, 32 GiB), 80/100 GiB |
+| **AWS production** | `aws-app-production` | **Separate state** — new VMs | `mek-lab-app-production-*` | backend/salome: `m6i.xlarge`+; GEO (split): `t3.large`; 80–500 GiB |
 
 **Critical:** `aws-app-staging` was renamed from `aws-app-prod`. Applying **m6i** instance types to staging **replaces** instances (plan: destroy/create). All staging sizing changes stay on `t3.large` in `aws-app-staging/terraform.tfvars`.
 

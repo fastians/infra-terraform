@@ -82,15 +82,15 @@ variable "backend_instance_type" {
 }
 
 variable "geo_instance_type" {
-  description = "EC2 instance type for the dedicated GEO host (FreeCAD/pythonocc). c7i.4xlarge = 16 vCPU, 32 GiB."
+  description = "EC2 instance type for the dedicated GEO host (FreeCAD/pythonocc). t3.large = 2 vCPU, 8 GiB."
   type        = string
-  default     = "c7i.4xlarge"
+  default     = "t3.large"
 }
 
 variable "llm_instance_type" {
-  description = "EC2 instance type for the dedicated LLM/RAG host. m7i.xlarge = 4 vCPU, 16 GiB."
+  description = "EC2 instance type for the dedicated LLM/RAG host. t3.small = 2 vCPU, 2 GiB."
   type        = string
-  default     = "m7i.xlarge"
+  default     = "t3.small"
 }
 
 variable "salome_instance_type" {
@@ -153,4 +153,36 @@ variable "tags" {
   description = "Additional tags to apply to resources."
   type        = map(string)
   default     = {}
+}
+
+# --- Static frontend (S3 + CloudFront) ---
+
+variable "enable_frontend_cdn" {
+  description = "Create S3 bucket + CloudFront distribution for the Vite simulation SPA."
+  type        = bool
+  default     = false
+}
+
+variable "frontend_hostnames" {
+  description = "Custom domains on CloudFront (replaces Vercel). Use apex + www. Requires frontend_route53_zone_id for Route53, or add CNAMEs in Cloudflare."
+  type        = list(string)
+  default     = ["mek-lab.com", "www.mek-lab.com"]
+}
+
+variable "frontend_route53_zone_id" {
+  description = "Route53 hosted zone id for mek-lab.com (ACM DNS validation + A/AAAA aliases). Leave empty to use *.cloudfront.net only."
+  type        = string
+  default     = ""
+}
+
+variable "frontend_cloudfront_price_class" {
+  description = "CloudFront price class for the SPA distribution."
+  type        = string
+  default     = "PriceClass_200"
+}
+
+variable "frontend_custom_domain_enabled" {
+  description = "Attach mek-lab.com to CloudFront. Set true after ACM validation CNAMEs exist in Cloudflare (cert ISSUED in us-east-1)."
+  type        = bool
+  default     = false
 }

@@ -23,10 +23,10 @@ enable_split_microservices = false
 backend_instance_type       = "m7i.2xlarge"
 backend_root_volume_size_gb = 200
 
-geo_instance_type       = "c7i.4xlarge"
+geo_instance_type       = "t3.large"
 geo_root_volume_size_gb = 500
 
-llm_instance_type       = "m7i.xlarge"
+llm_instance_type       = "t3.small"
 llm_root_volume_size_gb = 200
 
 salome_instance_type        = "r7i.8xlarge"
@@ -37,3 +37,8 @@ root_volume_type = "gp3"
 tags = {
   Owner = "platform-team"
 }
+
+# --- Simulation SPA (S3 + CloudFront, replaces Vercel at mek-lab.com) ---
+# enable_frontend_cdn = true
+# frontend_hostnames  = ["mek-lab.com", "www.mek-lab.com"]
+# frontend_route53_zone_id = ""  # leave empty when DNS is in Cloudflare (see docs/FRONTEND-AWS-CLOUDFLARE.md)

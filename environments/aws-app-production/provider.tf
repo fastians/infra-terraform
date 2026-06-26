@@ -9,6 +9,16 @@ terraform {
   }
 }
 
+# Primary region: Seoul (ap-northeast-2) — EC2, S3 SPA bucket, VPC.
 provider "aws" {
   region = var.aws_region
+
+  default_tags {
+    tags = {
+      Project     = var.project_name
+      Environment = var.environment
+      Region      = var.aws_region
+      ManagedBy   = "terraform"
+    }
+  }
 }

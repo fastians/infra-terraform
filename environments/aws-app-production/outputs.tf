@@ -97,3 +97,38 @@ output "ssh_command_example_llm" {
   description = "Example SSH to LLM host (null when split microservices disabled)."
   value       = var.enable_split_microservices ? "ssh -i ~/.ssh/<your-private-key> ubuntu@${module.llm[0].public_ip}" : null
 }
+
+output "frontend_aws_region" {
+  description = "S3 SPA origin region (Seoul)."
+  value       = module.frontend.aws_region
+}
+
+output "frontend_bucket_name" {
+  description = "S3 bucket for SPA deploy (aws s3 sync dist/)."
+  value       = module.frontend.bucket_name
+}
+
+output "frontend_cloudfront_distribution_id" {
+  description = "CloudFront distribution id for cache invalidation."
+  value       = module.frontend.cloudfront_distribution_id
+}
+
+output "frontend_site_urls" {
+  description = "Public HTTPS URLs for the simulation frontend."
+  value       = module.frontend.site_urls
+}
+
+output "frontend_cloudfront_domain" {
+  description = "Default CloudFront hostname (*.cloudfront.net)."
+  value       = module.frontend.cloudfront_domain_name
+}
+
+output "frontend_acm_validation_records" {
+  description = "ACM cert validation — add as CNAME records in Cloudflare before custom HTTPS works."
+  value       = module.frontend.acm_dns_validation_records
+}
+
+output "frontend_cloudflare_cname_records" {
+  description = "SPA traffic: CNAME in Cloudflare to CloudFront (not an A record to an IP)."
+  value       = module.frontend.cloudflare_cname_records
+}
